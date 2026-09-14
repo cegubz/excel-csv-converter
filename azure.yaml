@@ -1,0 +1,199 @@
+ 
+# # yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+# name: excel-to-csv-foundry-agent
+# services:
+#     aif-schemaupd-dev-aue-proj:
+#         host: azure.ai.project
+#         endpoint: https://aif-schemaupd-dev-aue-001.services.ai.azure.com/api/projects/aif-schemaupd-dev-aue-proj
+#     excel-csv-converter:
+#         project: .
+#         host: azure.ai.agent
+#         startupCommand: "python -m app.host"
+#         language: python
+#         uses:
+#             - aif-schemaupd-dev-aue-proj
+#         agentEndpoint:
+#             authorizationSchemes:
+#                 - type: BotServiceRbac
+#             protocols:
+#                 - responses
+#         codeConfiguration:
+#             dependencyResolution: remote_build
+#             entryPoint: "-m app.host"
+#             runtime: python_3_13
+#         container:
+#             resources:
+#                 cpu: "0.5"
+#                 memory: 1Gi
+#         kind: hosted
+#         name: excel-csv-converter
+#         protocols:
+#             - protocol: responses
+#               version: 2.0.0
+#     excel-csv-converter-agent:
+#         project: .
+#         host: azure.ai.agent
+#         language: python
+#         uses:
+#             - aif-schemaupd-dev-aue-proj
+#         codeConfiguration:
+#             dependencyResolution: remote_build
+#             entryPoint: "-m app.host"
+#             runtime: python_3_13
+#         container:
+#             resources:
+#                 cpu: "0.5"
+#                 memory: 1Gi
+#         kind: hosted
+#         name: excel-csv-converter-agent
+#         protocols:
+#             - protocol: responses
+#               version: 2.0.0
+# agents:
+#     excel-to-csv-agent:
+#         docker:
+#             context: .
+#             path: ./Dockerfile
+#         env:
+#             AZURE_STORAGE_ACCOUNT_URL:  https://stschemaupddevaue001.blob.core.windows.net/
+#             CSV_NAME_TEMPLATE: '{stem}__{sheet}.csv'
+#             INPUT_CONTAINER: fmg-inbound
+#             LOG_LEVEL: INFO
+#             OUTPUT_CONTAINER: fmg-outbound
+#             OUTPUT_PREFIX: ""
+#         language: python
+#         protocol: invocations
+
+
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+# name: excel-to-csv-foundry-agent
+
+# services:
+
+#   aif-schemaupd-dev-aue-proj:
+#     host: azure.ai.project
+#     endpoint: https://aif-schemaupd-dev-aue-001.services.ai.azure.com/api/projects/aif-schemaupd-dev-aue-proj
+
+#   excel-csv-converter:
+#     project: .
+#     host: azure.ai.agent
+#     startupCommand: "python -m app.host"
+#     language: python
+
+#     uses:
+#       - aif-schemaupd-dev-aue-proj
+
+#     agentEndpoint:
+#       authorizationSchemes:
+#         - type: BotServiceRbac
+#       protocols:
+#         - invocations
+
+#     codeConfiguration:
+#       dependencyResolution: remote_build
+#       entryPoint: "-m app.host"
+#       runtime: python_3_13
+
+#     container:
+#       resources:
+#         cpu: "0.5"
+#         memory: 1Gi
+
+#     kind: hosted
+#     name: excel-csv-converter
+
+#     protocols:
+#       - protocol: invocations
+#         version: 2.0.0
+
+#   excel-csv-converter-agent:
+#     project: .
+#     host: azure.ai.agent
+#     language: python
+
+#     uses:
+#       - aif-schemaupd-dev-aue-proj
+
+#     codeConfiguration:
+#       dependencyResolution: remote_build
+#       entryPoint: "-m app.host"
+#       runtime: python_3_13
+
+#     container:
+#       resources:
+#         cpu: "0.5"
+#         memory: 1Gi
+
+#     kind: hosted
+#     name: excel-csv-converter-agent
+
+#     protocols:
+#       - protocol: invocations
+#         version: 2.0.0
+
+# agents:
+#   excel-to-csv-agent:
+#     docker:
+#       context: .
+#       path: ./Dockerfile
+
+#     env:
+#       AZURE_STORAGE_ACCOUNT_URL: https://stschemaupddevaue001.blob.core.windows.net/
+#       CSV_NAME_TEMPLATE: "{stem}__{sheet}.csv"
+#       INPUT_CONTAINER: fmg-inbound
+#       LOG_LEVEL: INFO
+#       OUTPUT_CONTAINER: fmg-outbound
+#       OUTPUT_PREFIX: ""
+
+#     language: python
+#     protocol: invocations
+
+# yaml-language-server: $schema=https://raw.githubusercontent.com/Azure/azure-dev/main/schemas/v1.0/azure.yaml.json
+
+name: excel-to-csv-foundry-agent
+
+services:
+  aif-schemaupd-dev-aue-proj:
+    host: azure.ai.project
+    endpoint: https://aif-schemaupd-dev-aue-001.services.ai.azure.com/api/projects/aif-schemaupd-dev-aue-proj
+
+  excel-csv-converter:
+    project: .
+    host: azure.ai.agent
+    language: python
+    kind: hosted
+    name: excel-csv-converter
+
+    uses:
+      - aif-schemaupd-dev-aue-proj
+
+    env:
+      AZURE_STORAGE_ACCOUNT_URL: https://stschemaupddevaue001.blob.core.windows.net/
+      INPUT_CONTAINER: fmg-inbound
+      OUTPUT_CONTAINER: fmg-outbound
+      OUTPUT_PREFIX: ""
+      CSV_NAME_TEMPLATE: "{stem}__{sheet}.csv"
+      LOG_LEVEL: INFO
+
+    agentEndpoint:
+      authorizationSchemes:
+        - type: BotServiceRbac
+      protocols:
+        - invocations
+
+    protocols:
+      - protocol: invocations
+        version: 2.0.0
+
+    codeConfiguration:
+      dependencyResolution: remote_build
+      entryPoint: "-m app.host"
+      runtime: python_3_13
+
+    container:
+      resources:
+        cpu: "0.5"
+        memory: 1Gi

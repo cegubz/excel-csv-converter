@@ -1,0 +1,77 @@
+{
+  "$comment": "Sample Logic App (Consumption). Receives a filename over HTTP, invokes the Foundry Hosted Agent's /invocations endpoint using the Logic App's managed identity, and returns the list of generated CSVs. Replace <AGENT_INVOKE_URL> with the exact invoke URL from your 'azd ai agent' deploy output (Foundry project endpoint + the agent's /invocations route). Confirm the managed-identity 'audience' value against your tenant if you get a 401 (try https://cognitiveservices.azure.com as an alternative).",
+  "definition": {
+    "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {},
+    "triggers": {
+      "When_a_HTTP_request_is_received": {
+        "type": "Request",
+        "kind": "Http",
+        "inputs": {
+          "schema": {
+            "type": "object",
+            "properties": { "filename": { "type": "string" } },
+            "required": ["filename"]
+          }
+        }
+      }
+    },
+    "actions": {
+      "Invoke_Foundry_Hosted_Agent": {
+        "type": "Http",
+        "inputs": {
+          "method": "POST",
+          "uri": "<AGENT_INVOKE_URL>",
+          "headers": { "Content-Type": "application/json" },
+          "body": { "filename": "@triggerBody()?['filename']" },
+          "authentication": {
+            "type": "ManagedServiceIdentity",
+            "audience": "https://ai.azure.com"
+          }
+        },
+        "runAfter": {}
+      },
+      "Parse_conversion_result": {
+        "type": "ParseJson",
+        "inputs": {
+          "content": "@body('Invoke_Foundry_Hosted_Agent')",
+          "schema": {
+            "type": "object",
+            "properties": {
+              "status": { "type": "string" },
+              "source_blob": { "type": "string" },
+              "output_container": { "type": "string" },
+              "sheet_count": { "type": "integer" },
+              "files": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "sheet_name": { "type": "string" },
+                    "csv_blob_name": { "type": "string" },
+                    "csv_url": { "type": "string" },
+                    "rows": { "type": "integer" },
+                    "columns": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "runAfter": { "Invoke_Foundry_Hosted_Agent": ["Succeeded"] }
+      },
+      "Respond_to_caller": {
+        "type": "Response",
+        "kind": "Http",
+        "inputs": {
+          "statusCode": 200,
+          "headers": { "Content-Type": "application/json" },
+          "body": "@body('Parse_conversion_result')"
+        },
+        "runAfter": { "Parse_conversion_result": ["Succeeded"] }
+      }
+    },
+    "outputs": {}
+  }
+}

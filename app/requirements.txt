@@ -1,0 +1,16 @@
+# ---- Foundry Hosted Agent runtime (Invocations protocol) --------------------
+# Serves POST /invocations + GET /readiness on Foundry-managed infrastructure.
+# Pulls in azure-ai-agentserver-core, starlette and hypercorn automatically.
+azure-ai-agentserver-invocations 
+
+# ---- Excel -> CSV core ----
+pandas 
+openpyxl           # engine pandas uses to read .xlsx / .xlsm
+
+# ---- Azure Blob Storage + auth (Managed Identity) ----
+azure-storage-blob 
+azure-identity 
+
+# ---- Config ----
+pydantic 
+pydantic-settings
